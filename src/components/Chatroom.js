@@ -11,40 +11,56 @@ const Chatroom = ({ match }) => {
   const feedID = match.params.id
   const [hasMore, setHasMore] = useState(true)
   const [messagesBackLength, setMessagesBackLength] = useState(0)
+  const feedSorter = new Date().getTime() * -1
+
+  /*
+  
+  - Do we need messagesBackLength, setMessagesBackLength state still,
+      as now we are able to get messages with listener?
+      If we don't, we have to refactor our code for the condition of hasMore
+
+  - We do not need fetchComments any longer, as now we got the listener working
+
+  - Also, a wild warning has appeared in the console:
+      @firebase/database: FIREBASE WARNING: Using an unspecified index.
+      Your data will be downloaded and filtered on the client.
+      Consider adding ".indexOn": "sorter" at /social_feed_messages/feed2 to your security rules for better performance. 
+    We should ask Daniel to create an index for this?
+  
+  */
 
   const [comments, setComments] = useState([])
   const [message, setMessage] = useState('')
-  const randomNumber = Math.floor(Math.random() * 100).toString()
-  const composerName = 'Tester name ' + randomNumber
-  const creationTime = new Date().getTime()
-  const sorter = creationTime * -1
-  const formData = { message, composerName, creationTime, sorter }
 
   useEffect(() => {
+    fetchComments()
     firebaseListenToComments(feedID)
   }, [])
 
   const fetchComments = async () => {
     const res = await axios.get(
-      `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedID}/messages?paginateKey=${sorter}`
+      `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedID}/messages?paginateKey=${feedSorter}`
     )
 
     const sortedMessages = res.data.data.messages.sort(
       (a, b) => b.sorter - a.sorter
     )
+
     setMessagesBackLength(res.data.data.messages.length)
     setComments(sortedMessages)
   }
 
   const firebaseListenToComments = id => {
-    var startDate = new Date().getTime() * -1
+    let startDate = new Date().getTime()
     db.ref(`/social_feed_messages/${id}`)
-      .orderByChild('sorter')
+      .orderByChild('creationTime')
       .startAt(startDate)
-      .limitToFirst(8)
+      .limitToFirst(2)
       .on('child_added', data => {
-        console.log(data)
-        console.log(data.val())
+        let newComment = data.val()
+        console.log(newComment)
+
+        setComments([newComment, ...comments])
       })
   }
 
@@ -59,7 +75,7 @@ const Chatroom = ({ match }) => {
       return b.sorter - a.sorter
     })
 
-    console.log(olderMessages.length)
+    // console.log(olderMessages.length)
 
     if (olderMessages.length < messagesBackLength) {
       setHasMore(false)
@@ -72,6 +88,12 @@ const Chatroom = ({ match }) => {
     e.preventDefault()
 
     try {
+      const randomNumber = Math.floor(Math.random() * 100).toString()
+      const composerName = 'Tester name ' + randomNumber
+      const creationTime = new Date().getTime()
+      const sorter = creationTime * -1
+      const formData = { message, composerName, creationTime, sorter }
+
       const res = await axios.post(
         `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedID}/messages`,
         {
@@ -83,7 +105,8 @@ const Chatroom = ({ match }) => {
       )
 
       if (res.data.code === 'SUCCESS') {
-        setComments([formData, ...comments])
+        const duplicateComments = [...comments]
+        setComments([formData, ...duplicateComments])
         setMessage('')
       }
     } catch (error) {
