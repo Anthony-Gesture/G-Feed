@@ -83,9 +83,30 @@ p.post-fromto-info.my-1.comments-sender-info {
   margin-bottom: 5px;
 }
 
+.comment-form .comment-send-form .msg-send-button:active,
+.comment-form .comment-send-form .msg-send-button:focus {
+  outline: 0;
+  border: 0;
+  background-color: #fff;
+}
+
+.comment-form .comment-send-form .msg-send-button span.css-teimca:active,
+.comment-form .comment-send-form .msg-send-button span.css-teimca:focus {
+  outline: 0;
+  border: 0;
+  background-color: #fff;
+}
+
 .msg-send-button span {
   color: var(--primary-color);
   font-size: 1.05rem;
+}
+
+.comment-form .comment-send-form .msg-send-button span.css-teimca:active,
+.comment-form .comment-send-form .msg-send-button span.css-teimca:focus {
+  outline: 0;
+  border: 0;
+  background-color: #fff;
 }
 
 /* Message area on mobile */
@@ -290,9 +311,30 @@ p.post-fromto-info.my-1.comments-sender-info {
     margin-bottom: 5px;
   }
 
+  .comment-form .comment-send-form .msg-send-button:active,
+  .comment-form .comment-send-form .msg-send-button:focus {
+    outline: 0;
+    border: 0;
+    background-color: #fff;
+  }
+
+  .comment-form .comment-send-form .msg-send-button span.css-teimca:active,
+  .comment-form .comment-send-form .msg-send-button span.css-teimca:focus {
+    outline: 0;
+    border: 0;
+    background-color: #fff;
+  }
+
   .msg-send-button span {
     color: var(--primary-color);
     font-size: 1.05rem;
+  }
+
+  .msg-send-button span:focus,
+  .msg-send-button span:active {
+    outline: 0;
+    border: 0;
+    background-color: #fff;
   }
 
   /* message area */
