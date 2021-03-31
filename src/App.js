@@ -1,11 +1,11 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import FeedScreen from './components/FeedScreen';
-import Chatroom from './components/Chatroom';
-import Navbar from './components/Navbar';
+import React from 'react'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import FeedScreen from './components/FeedScreen'
+import Chatroom from './components/Chatroom'
+import Navbar from './components/Navbar'
 
-import './bootstrap.min.css';
-import './App.css';
+import './bootstrap.min.css'
+import './App.css'
 
 const App = () => {
   return (
@@ -13,12 +13,12 @@ const App = () => {
       <Router>
         <Navbar />
         <Switch>
-          <Route exact path='/' component={FeedScreen} />
-          <Route exact path='/:id/comments' component={Chatroom} />
+          <Route exact path="/" component={FeedScreen} />
+          <Route exact path="/:id/messages" component={Chatroom} />
         </Switch>
       </Router>
     </>
-  );
-};
+  )
+}
 
-export default App;
+export default App

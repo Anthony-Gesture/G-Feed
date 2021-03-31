@@ -4,90 +4,131 @@ import { Link } from 'react-router-dom'
 import { Button } from 'react-bootstrap'
 import { timeSince } from '../utils/utils.js'
 import { db } from '../utils/firebase'
+import ClipLoader from 'react-spinners/ClipLoader'
 
 import './Chatroom.css'
 
+// 3/30/2021
+// basic spinner added both on chatroom.js and feedscreen.js
+// spinner is displayed when feeds/messages are being loaded and when load more button is clicked
+// in chatroom.js, when a new message is posted, scroll goes up to the top
+
 const Chatroom = ({ match }) => {
   const feedID = match.params.id
+  const numOfMessagesPerLoad = 8
+
+  const messageSorter = new Date().getTime() * -1
+
   const [hasMore, setHasMore] = useState(true)
   const [messagesBackLength, setMessagesBackLength] = useState(0)
-  const feedSorter = new Date().getTime() * -1
-
-  /*
-  
-  - Do we need messagesBackLength, setMessagesBackLength state still,
-      as now we are able to get messages with listener?
-      If we don't, we have to refactor our code for the condition of hasMore
-
-  - We do not need fetchComments any longer, as now we got the listener working
-
-  - Also, a wild warning has appeared in the console:
-      @firebase/database: FIREBASE WARNING: Using an unspecified index.
-      Your data will be downloaded and filtered on the client.
-      Consider adding ".indexOn": "sorter" at /social_feed_messages/feed2 to your security rules for better performance. 
-    We should ask Daniel to create an index for this?
-  
-  */
-
-  const [comments, setComments] = useState([])
+  const [messages, setMessages] = useState([])
   const [message, setMessage] = useState('')
 
+  const [messagesLoading, setMessagesLoading] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [posting, setPosting] = useState(false)
+
   useEffect(() => {
-    fetchComments()
-    firebaseListenToComments(feedID)
-  }, [])
+    console.log('getMessages in useEffect starts') // 1
+    getMessages(messageSorter)
+    console.log('getMessages in useEffect ends') // 3
 
-  const fetchComments = async () => {
+    // let startDate = new Date().getTime()
+
+    let messagesRef = db
+      .ref(`/social_feed_messages/${feedID}`)
+      .orderByChild('sorter')
+      .limitToFirst(1) // the newest data is on top
+    // .startAt(startDate * -1) // the bigger the number, the older as it's negative value
+
+    // 3/29/2021 12:14 pm
+    // this startAt method has been prohibiting the re-render of the component so far
+    // if we disable this, child_added event works. everytime i post something, it gets logged
+    // actually we don't even need startAt because it's already been sorted by orderByChild('sorter')
+
+    // now what needs to be done is to be able to turn all the objects data.val() into one array
+    // that we can map through and push into another array (our messages state) with spread operator
+
+    console.log('Listener in useEffect starts') // 4
+    messagesRef.on('child_added', data => {
+      // 3/29/2021 12:14 pm
+      // either 'value' or 'child_added' is fine
+      // the difference is that,
+      // to use 'value',
+      // we have to make another callback function
+      // Ref.on('values', snapshot => {
+      //    snapshot.forEach(data => {
+      //      // do something...
+      //    })
+      // })
+      //
+      // but to use 'child_added',
+      // we cannot go deeper any more
+
+      let newestMessage = data.val()
+      console.log('Newest message from database:', newestMessage)
+    })
+
+    console.log('Listener in useEffect ends') // 5
+
+    return () => messagesRef.off()
+  }, [feedID])
+
+  const getMessages = async paginateKey => {
+    console.log('getMessages declaration starts') // 2
+    setMessagesLoading(true)
+
     const res = await axios.get(
-      `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedID}/messages?paginateKey=${feedSorter}`
+      `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedID}/messages?paginateKey=${paginateKey}`
     )
 
-    const sortedMessages = res.data.data.messages.sort(
-      (a, b) => b.sorter - a.sorter
-    )
-
+    /*
+      const sortedMessages = res.data.data.messages.sort(
+        (a, b) => a.sorter - b.sorter
+      )
+    */
     setMessagesBackLength(res.data.data.messages.length)
-    setComments(sortedMessages)
-  }
 
-  const firebaseListenToComments = id => {
-    let startDate = new Date().getTime()
-    db.ref(`/social_feed_messages/${id}`)
-      .orderByChild('creationTime')
-      .startAt(startDate)
-      .limitToFirst(2)
-      .on('child_added', data => {
-        let newComment = data.val()
-        console.log(newComment)
+    setMessages(res.data.data.messages)
 
-        setComments([newComment, ...comments])
-      })
+    setMessagesLoading(false)
+
+    console.log('getMessages declaration ends') // 6
   }
 
   const getOlderMessages = async () => {
-    const paginateKey = (comments[comments.length - 1].sorter + 1).toString()
+    console.log('getOlderMessages starts')
+    setLoadingMore(true)
+
+    const paginateKey = (
+      messages && messages[messages.length - 1].sorter + 1
+    ).toString()
 
     const res = await axios.get(
       `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedID}/messages?paginateKey=${paginateKey}`
     )
 
     const olderMessages = res.data.data.messages.sort((a, b) => {
-      return b.sorter - a.sorter
+      return a.sorter - b.sorter
     })
-
-    // console.log(olderMessages.length)
 
     if (olderMessages.length < messagesBackLength) {
       setHasMore(false)
     }
 
-    setComments([...comments, ...olderMessages])
+    setMessages([...messages, ...olderMessages])
+
+    setLoadingMore(false)
+    console.log('getOlderMessages ends')
   }
 
   const postMessage = async e => {
     e.preventDefault()
+    console.log('postMessages starts')
+    setPosting(true)
 
     try {
+      /*
       const randomNumber = Math.floor(Math.random() * 100).toString()
       const composerName = 'Tester name ' + randomNumber
       const creationTime = new Date().getTime()
@@ -96,20 +137,32 @@ const Chatroom = ({ match }) => {
 
       const res = await axios.post(
         `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedID}/messages`,
-        {
-          message,
-          composerName,
-          creationTime,
-          sorter,
-        }
+        { message, composerName, creationTime, sorter }
       )
 
       if (res.data.code === 'SUCCESS') {
-        const duplicateComments = [...comments]
-        setComments([formData, ...duplicateComments])
+        setMessages([formData, ...messages])
         setMessage('')
+      } */
+
+      const newMessage = {
+        composerName:
+          'Tester Name ' + Math.floor(Math.random() * 100).toString(),
+        creationTime: new Date().getTime(),
+        sorter: new Date().getTime() * -1,
+        message,
       }
+
+      console.log('Message just posted:', newMessage)
+      setMessages([newMessage, ...messages])
+      setMessage('')
+
+      console.log('postMessages ends')
+      await db.ref(`/social_feed_messages/${feedID}`).push(newMessage)
+      document.getElementById('comments').scrollTo(0, 0) // scroll to top after a new message is posted
+      setPosting(false)
     } catch (error) {
+      console.log('postMessages ends')
       console.error(error.message)
     }
   }
@@ -148,30 +201,39 @@ const Chatroom = ({ match }) => {
                 type="submit"
                 disabled={message.length === 0}
               >
-                <span>Post</span>
+                {posting ? (
+                  <ClipLoader size={20} color="#8585ff" />
+                ) : (
+                  <span>Post</span>
+                )}
               </Button>
             </form>
           </div>
         </div>
 
-        <div className="comments">
+        {messagesLoading && (
+          <div className="messages-loading">
+            <ClipLoader size={40} color="#8585ff" />
+          </div>
+        )}
+        <div id="comments" className="comments">
           <div className="comments-area">
-            {comments
+            {messages
               .sort((a, b) => {
                 return a.sorter - b.sorter
               })
-              .map(comment => (
-                <div className="com-each-comment" key={comment.creationTime}>
+              .map(msg => (
+                <div className="com-each-comment" key={msg.creationTime}>
                   <div className="user-and-comment">
                     <p className="username-display">
-                      <span>{comment.composerName}</span>
+                      <span>{msg.composerName}</span>
                     </p>
-                    <p className="com-text-comment">{comment.message}</p>
+                    <p className="com-text-comment">{msg.message}</p>
                   </div>
 
                   <div className="comment-footer">
                     <small className="comment-timestamp">
-                      {timeSince(comment.creationTime)}
+                      {timeSince(msg.creationTime)}
                     </small>
                   </div>
                 </div>
@@ -179,11 +241,19 @@ const Chatroom = ({ match }) => {
           </div>
 
           <div className="comments-load-more">
-            {hasMore && (
-              <button className="load-more-button" onClick={getOlderMessages}>
-                Load more
-              </button>
-            )}
+            {hasMore &&
+              !messagesLoading &&
+              messages.length >= numOfMessagesPerLoad && (
+                <button className="load-more-button" onClick={getOlderMessages}>
+                  {loadingMore ? (
+                    <div className="more-messages-loading">
+                      <ClipLoader size={18} color="#fff" />
+                    </div>
+                  ) : (
+                    'Load more'
+                  )}
+                </button>
+              )}
           </div>
         </div>
       </section>

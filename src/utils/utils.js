@@ -6,7 +6,6 @@ export const timeSince = timestamp => {
 
   if (timeDifference >= 31536000000) {
     const years = Math.floor(timeDifference / 31536000000)
-
     return years > 1 ? years + ' years ago' : years + ' year ago'
   } else if (timeDifference >= 2419200000) {
     const months = Math.floor(timeDifference / 2419200000)

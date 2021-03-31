@@ -97,6 +97,18 @@ p.post-fromto-info.my-1.comments-sender-info {
   overflow-x: hidden;
 }
 
+.messages-loading {
+  display: flex;
+  justify-content: center;
+  margin-top: 40vh;
+}
+
+.more-messages-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .comments-area {
   padding-left: 5%;
   padding-right: 5%;
@@ -290,6 +302,18 @@ p.post-fromto-info.my-1.comments-sender-info {
     height: 60vh;
     overflow: scroll;
     overflow-x: hidden;
+  }
+
+  .messages-loading {
+    display: flex;
+    justify-content: center;
+    margin-top: 25vh;
+  }
+
+  .more-messages-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .comments-area {
