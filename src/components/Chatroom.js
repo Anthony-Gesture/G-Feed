@@ -8,17 +8,13 @@ import ClipLoader from 'react-spinners/ClipLoader'
 
 import './Chatroom.css'
 
-// 3/30/2021
-// basic spinner added both on chatroom.js and feedscreen.js
-// spinner is displayed when feeds/messages are being loaded and when load more button is clicked
-// in chatroom.js, when a new message is posted, scroll goes up to the top
-
 const Chatroom = ({ match }) => {
   const feedID = match.params.id
   const numOfMessagesPerLoad = 8
 
   const [hasMore, setHasMore] = useState(true)
   const [messages, setMessages] = useState([])
+
   const [message, setMessage] = useState('')
 
   const [messagesLoading, setMessagesLoading] = useState(false)
@@ -42,20 +38,6 @@ const Chatroom = ({ match }) => {
     setMessagesLoading(true)
 
     messagesRef.on('value', snapshot => {
-      // 3/29/2021 12:14 pm
-      // either 'value' or 'child_added' is fine
-      // the difference is that,
-      // to use 'value',
-      // we have to make another callback function
-      // Ref.on('values', snapshot => {
-      //    snapshot.forEach(data => {
-      //      // do something...
-      //    })
-      // })
-      //
-      // but to use 'child_added',
-      // we cannot go deeper any more
-
       const messagesList = []
       let newestMessage = ''
 
@@ -71,7 +53,7 @@ const Chatroom = ({ match }) => {
     })
 
     return () => messagesRef.off()
-  }, [])
+  }, [feedID])
 
   /*
   // 3.31.2021
@@ -126,11 +108,17 @@ const Chatroom = ({ match }) => {
 
     try {
       const newMessage = {
-        composerName:
-          'Tester Name ' + Math.floor(Math.random() * 100).toString(),
+        message,
         creationTime: Date.now(),
         sorter: Date.now() * -1,
-        message,
+        composerName:
+          'Tester Name ' + Math.floor(Math.random() * 100).toString(),
+      }
+
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }
 
       // 3.31.2021
@@ -144,7 +132,8 @@ const Chatroom = ({ match }) => {
       // 2. we have to prevent onChange function inside <input /> from re-rendering after each keystroke
       const res = await axios.post(
         `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedID}/messages`,
-        newMessage
+        newMessage,
+        config
       )
 
       // if I can use firebase methods
