@@ -8,6 +8,14 @@ import ClipLoader from 'react-spinners/ClipLoader'
 
 import './Chatroom.css'
 
+/*
+How to make feeds/messages private
+  create a new feed/message normally and delete the sorter node from ones that we'd like to be private
+  so that we are not able to sort them by sorter and thus they will not be displayed
+  
+  Then, how can we specify which feeds/messages to be private?
+*/
+
 const Chatroom = ({ match }) => {
   const feedID = match.params.id
   const numOfMessagesPerLoad = 8
@@ -22,12 +30,15 @@ const Chatroom = ({ match }) => {
   const [posting, setPosting] = useState(false)
 
   useEffect(() => {
-    // getMessages(messageSorter)
-
     let messagesRef = db
       .ref(`/social_feed_messages/${feedID}`)
       .orderByChild('sorter')
       .limitToFirst(numOfMessagesPerLoad) // the first {8} newest data
+
+    // 3/29/2021 12:14 pm
+    // this startAt method has been prohibiting the re-render of the component so far
+    // if we disable this, child_added event works. everytime i post something, it gets logged
+    // actually we don't even need startAt because it's already been sorted by orderByChild('sorter')
 
     setMessagesLoading(true)
 
@@ -38,18 +49,25 @@ const Chatroom = ({ match }) => {
       } // do nothing and just return if there is no message
 
       const messagesList = []
-      // let newestMessage = ''
 
       snapshot.forEach(data => {
         messagesList.push(data.val())
       })
 
       setMessages(messagesList)
+      // https://stackoverflow.com/questions/34687091/can-i-execute-a-function-after-setstate-is-finished-updating
       setMessagesLoading(false)
     })
 
     return () => messagesRef.off()
   }, [feedID])
+
+  /*
+  // 3.31.2021
+  I'll just leave this here as a legacy...or, just in case
+  check line 29 and you'll see that getMessages() is not being called any longer
+  and we can still get messages through listener
+*/
 
   const getOlderMessages = async () => {
     setLoadingMore(true)
@@ -88,18 +106,20 @@ const Chatroom = ({ match }) => {
           'Tester Name ' + Math.floor(Math.random() * 100).toString(),
       }
 
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
+      // 4/2/2021
+      // I think the reason it's working now
+      // is because I specified the content type of the POST data?
+      // turns out to be not the case (specifying the content type of data)
+
+      // 3.31.2021
+      // sticking to axios.post to post new messages
+      // as I noticed that the database started to save items with weird-looking negative value ids
+      // as firebase realtime database uses timestamp to create unique ids
+      // and firebase listener has perfectly replaced the GET request (getMessages)
       const res = await axios.post(
         `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedID}/messages`,
-        newMessage,
-        config
+        newMessage
       )
-
-      console.log('res.data.data.message:', res.data.data.message)
 
       setMessages([res.data.data.message, ...messages])
       setMessage('')
@@ -109,6 +129,13 @@ const Chatroom = ({ match }) => {
     } catch (error) {
       console.error(error.message)
     }
+  }
+
+  // to make spinner on Post button look better
+  // if everything gets sorted out, get rid of this
+  const postButtonCSSTestHandler = e => {
+    e.preventDefault()
+    console.log('clicked')
   }
 
   return (
@@ -146,7 +173,9 @@ const Chatroom = ({ match }) => {
                 disabled={message.length === 0}
               >
                 {posting ? (
-                  <ClipLoader size={20} color="#8585ff" />
+                  <span>
+                    <ClipLoader size={20} color="#8585ff" />
+                  </span>
                 ) : (
                   <span>Post</span>
                 )}
