@@ -8,37 +8,23 @@ import ClipLoader from 'react-spinners/ClipLoader'
 
 import './Chatroom.css'
 
-/*
-How to make feeds/messages private
-  create a new feed/message normally and delete the sorter node from ones that we'd like to be private
-  so that we are not able to sort them by sorter and thus they will not be displayed
-  
-  Then, how can we specify which feeds/messages to be private?
-*/
-
 const Chatroom = ({ match }) => {
   const feedID = match.params.id
   const numOfMessagesPerLoad = 8
 
-  const [hasMore, setHasMore] = useState(true)
-  const [messages, setMessages] = useState([])
+  const [hasMore, setHasMore] = useState(true) // for the Load more button display
+  const [messages, setMessages] = useState([]) // all the messages for each feed
+  const [message, setMessage] = useState('') // message - text input
 
-  const [message, setMessage] = useState('')
-
-  const [messagesLoading, setMessagesLoading] = useState(false)
-  const [loadingMore, setLoadingMore] = useState(false)
-  const [posting, setPosting] = useState(false)
+  const [messagesLoading, setMessagesLoading] = useState(false) // for the spinner when the first 8 messages are being loaded
+  const [loadingMore, setLoadingMore] = useState(false) // for the spinner when users click Load more button
+  const [posting, setPosting] = useState(false) // for the spinner when users click Post button
 
   useEffect(() => {
     let messagesRef = db
       .ref(`/social_feed_messages/${feedID}`)
       .orderByChild('sorter')
       .limitToFirst(numOfMessagesPerLoad) // the first {8} newest data
-
-    // 3/29/2021 12:14 pm
-    // this startAt method has been prohibiting the re-render of the component so far
-    // if we disable this, child_added event works. everytime i post something, it gets logged
-    // actually we don't even need startAt because it's already been sorted by orderByChild('sorter')
 
     setMessagesLoading(true)
 
@@ -60,14 +46,7 @@ const Chatroom = ({ match }) => {
     })
 
     return () => messagesRef.off()
-  }, [feedID])
-
-  /*
-  // 3.31.2021
-  I'll just leave this here as a legacy...or, just in case
-  check line 29 and you'll see that getMessages() is not being called any longer
-  and we can still get messages through listener
-*/
+  }, [])
 
   const getOlderMessages = async () => {
     setLoadingMore(true)
@@ -110,6 +89,13 @@ const Chatroom = ({ match }) => {
       // I think the reason it's working now
       // is because I specified the content type of the POST data?
       // turns out to be not the case (specifying the content type of data)
+      /*
+      const config = {
+        headers: {
+          'Content-Type': 'application/json
+        }
+      }
+      */
 
       // 3.31.2021
       // sticking to axios.post to post new messages
@@ -119,6 +105,7 @@ const Chatroom = ({ match }) => {
       const res = await axios.post(
         `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedID}/messages`,
         newMessage
+        // config
       )
 
       setMessages([res.data.data.message, ...messages])
