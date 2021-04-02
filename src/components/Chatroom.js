@@ -28,18 +28,17 @@ const Chatroom = ({ match }) => {
       .ref(`/social_feed_messages/${feedID}`)
       .orderByChild('sorter')
       .limitToFirst(numOfMessagesPerLoad) // the first {8} newest data
-    // .startAt(startDate * -1) // the bigger the number, the older as it's negative value
-
-    // 3/29/2021 12:14 pm
-    // this startAt method has been prohibiting the re-render of the component so far
-    // if we disable this, child_added event works. everytime i post something, it gets logged
-    // actually we don't even need startAt because it's already been sorted by orderByChild('sorter')
 
     setMessagesLoading(true)
 
     messagesRef.on('value', snapshot => {
+      if (!snapshot.exists() || snapshot.length === 0) {
+        setMessagesLoading(false)
+        return
+      } // do nothing and just return if there is no message
+
       const messagesList = []
-      let newestMessage = ''
+      // let newestMessage = ''
 
       snapshot.forEach(data => {
         messagesList.push(data.val())
@@ -47,36 +46,10 @@ const Chatroom = ({ match }) => {
 
       setMessages(messagesList)
       setMessagesLoading(false)
-      newestMessage = messagesList[0]
-      console.log('messagesList:', messagesList)
-      console.log('newestMessage:', newestMessage)
     })
 
     return () => messagesRef.off()
   }, [feedID])
-
-  /*
-  // 3.31.2021
-  I'll just leave this here as a legacy...or, just in case
-  check line 29 and you'll see that getMessages() is not being called any longer
-  and we can still get messages through listener
-
-  const getMessages = async paginateKey => {
-    setMessagesLoading(true)
-
-    const res = await axios.get(
-      `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedID}/messages?paginateKey=${paginateKey}`
-    )
-
-      const sortedMessages = res.data.data.messages.sort(
-        (a, b) => a.sorter - b.sorter
-      )
-    
-    setMessagesBackLength(res.data.data.messages.length)
-    setMessages(res.data.data.messages)
-    setMessagesLoading(false)
-  }
-*/
 
   const getOlderMessages = async () => {
     setLoadingMore(true)
@@ -120,25 +93,11 @@ const Chatroom = ({ match }) => {
           'Content-Type': 'application/json',
         },
       }
-
-      // 3.31.2021
-      // sticking to axios.post to post new messages
-      // as I noticed that the database started to save items with weird-looking negative value ids
-      // as firebase realtime database uses timestamp to create unique ids
-      // and firebase listener has perfectly replaced the GET request (getMessages)
-      // now the issue we have to fix is:
-      // 1. we have to force re-render of messages page when a new message is posted
-      //    looks like the page re-renders but only without the timestamp...just why?
-      // 2. we have to prevent onChange function inside <input /> from re-rendering after each keystroke
       const res = await axios.post(
         `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedID}/messages`,
         newMessage,
         config
       )
-
-      // if I can use firebase methods
-      // await db.ref(`/social_feed_messages/${feedID}`).push(newMessage)
-      // await db.ref(`/social_feed_messages/${feedID}`).push().set(newMessage)
 
       console.log('res.data.data.message:', res.data.data.message)
 
