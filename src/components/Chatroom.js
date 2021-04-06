@@ -8,9 +8,19 @@ import ClipLoader from 'react-spinners/ClipLoader'
 
 import './Chatroom.css'
 
+// 4/2/2021
+// 1. Double scrolling issue
+//    Maybe I can set the overflow y to another HTML element, rather than '.comments'
+// 2. Zooming in issue
+//    Looks like it's an iOS issue but there must be a global/official fix
+// 3. Personalisation
+//    get the user's name from the endpoint: `/tokens/:tokenId`
+//    and update composerName with that name
+
 const Chatroom = ({ match }) => {
   const feedID = match.params.id
   const numOfMessagesPerLoad = 8
+  const tokenId = '1234' || '123' // composerName = 'Misbah' if tokenId === '123' else 'Anthony'
 
   const [hasMore, setHasMore] = useState(true) // for the Load more button display
   const [messages, setMessages] = useState([]) // all the messages for each feed
@@ -21,10 +31,17 @@ const Chatroom = ({ match }) => {
   const [posting, setPosting] = useState(false) // for the spinner when users click Post button
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+
     let messagesRef = db
       .ref(`/social_feed_messages/${feedID}`)
       .orderByChild('sorter')
       .limitToFirst(numOfMessagesPerLoad) // the first {8} newest data
+    // 4/6/2021
+    // someone manually modified the timestamp of the message on top of feed2
+    // with composerName C as in Cake
+    // its creationTime and sorter are actually different numbers
+    // and that's why the message's on top when it's written 45 years ago
 
     setMessagesLoading(true)
 
@@ -76,13 +93,18 @@ const Chatroom = ({ match }) => {
     e.preventDefault()
     setPosting(true)
 
+    const userRes = await axios.get(
+      `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/tokens/${tokenId}`
+    )
+
+    let userName = userRes.data.data.name
+
     try {
       const newMessage = {
         message,
         creationTime: Date.now(),
         sorter: Date.now() * -1,
-        composerName:
-          'Tester Name ' + Math.floor(Math.random() * 100).toString(),
+        composerName: userName,
       }
 
       // 4/2/2021
@@ -149,6 +171,7 @@ const Chatroom = ({ match }) => {
                 type="text"
                 name="text"
                 value={message}
+                style={{ fontSize: '16px' }}
                 placeholder="Say something..."
                 className="comment-form-input"
                 onChange={e => setMessage(e.target.value)}
@@ -157,7 +180,7 @@ const Chatroom = ({ match }) => {
               <Button
                 className="msg-send-button"
                 type="submit"
-                disabled={message.length === 0}
+                disabled={message.length === 0 || posting}
               >
                 {posting ? (
                   <span>
@@ -180,7 +203,7 @@ const Chatroom = ({ match }) => {
           <div className="comments-area">
             {messages.length === 0 && !messagesLoading ? (
               <div style={{ textAlign: 'center' }}>
-                <p>This feed has no messages yet.</p>
+                <p className="mt-3">This feed has no messages yet.</p>
               </div>
             ) : (
               messages

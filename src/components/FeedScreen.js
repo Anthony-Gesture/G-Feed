@@ -12,6 +12,8 @@ const FeedScreen = () => {
   const [loadingMoreFeeds, setLoadingMoreFeeds] = useState(false)
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+
     const fetchFeeds = async () => {
       setLoadingFeeds(true)
 

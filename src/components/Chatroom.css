@@ -8,8 +8,7 @@
 
 /* Contents on mobile */
 section.main-comments {
-  height: 100vh;
-  padding: 0;
+  height: 100%;
 }
 
 /* Go back button area on mobile */
@@ -107,8 +106,8 @@ p.post-fromto-info.my-1.comments-sender-info {
   margin: 0 auto;
   width: 100%;
   height: 100%;
-  overflow: scroll;
   overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 .messages-loading {
@@ -228,7 +227,8 @@ p.post-fromto-info.my-1.comments-sender-info {
   /* contents */
   section.main-comments {
     max-width: 500px;
-    max-height: 78vh;
+    height: 100%;
+    max-height: 780vh;
     margin: 0 auto;
     margin-top: 8%;
     box-shadow: rgb(30 61 99 / 50%) 0px 2px 10px 0px;
@@ -304,18 +304,16 @@ p.post-fromto-info.my-1.comments-sender-info {
     margin-bottom: 5px;
   }
 
-  .comment-form .comment-send-form .msg-send-button:active,
   .comment-form .comment-send-form .msg-send-button:focus {
     outline: 0;
     border: 0;
     background-color: transparent;
   }
 
-  .comment-form .comment-send-form .msg-send-button span:active,
   .comment-form .comment-send-form .msg-send-button span:focus {
     outline: 0;
     border: 0;
-    background-color: #fff;
+    background-color: transparent;
   }
 
   .msg-send-button span {
@@ -330,6 +328,11 @@ p.post-fromto-info.my-1.comments-sender-info {
     height: 60vh;
     overflow: scroll;
     overflow-x: hidden;
+  }
+
+  .comments-area {
+    overflow-x: hidden;
+    overflow: hidden;
   }
 
   .messages-loading {
