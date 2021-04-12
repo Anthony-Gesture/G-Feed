@@ -8,14 +8,6 @@ import ClipLoader from 'react-spinners/ClipLoader'
 
 import './Chatroom.css'
 
-// 4/2/2021
-// 1. Double scrolling issue
-//    Maybe I can set the overflow y to another HTML element, rather than '.comments'
-// 2. Zooming in issue
-//    Looks like it's an iOS issue but there must be a global/official fix
-// 3. Personalisation
-//    get the user's name from the endpoint: `/tokens/:tokenId`
-//    and update composerName with that name
 
 const Chatroom = ({ match }) => {
   const feedID = match.params.id
@@ -37,11 +29,6 @@ const Chatroom = ({ match }) => {
       .ref(`/social_feed_messages/${feedID}`)
       .orderByChild('sorter')
       .limitToFirst(numOfMessagesPerLoad) // the first {8} newest data
-    // 4/6/2021
-    // someone manually modified the timestamp of the message on top of feed2
-    // with composerName C as in Cake
-    // its creationTime and sorter are actually different numbers
-    // and that's why the message's on top when it's written 45 years ago
 
     setMessagesLoading(true)
 
@@ -106,24 +93,6 @@ const Chatroom = ({ match }) => {
         sorter: Date.now() * -1,
         composerName: userName,
       }
-
-      // 4/2/2021
-      // I think the reason it's working now
-      // is because I specified the content type of the POST data?
-      // turns out to be not the case (specifying the content type of data)
-      /*
-      const config = {
-        headers: {
-          'Content-Type': 'application/json
-        }
-      }
-      */
-
-      // 3.31.2021
-      // sticking to axios.post to post new messages
-      // as I noticed that the database started to save items with weird-looking negative value ids
-      // as firebase realtime database uses timestamp to create unique ids
-      // and firebase listener has perfectly replaced the GET request (getMessages)
       const res = await axios.post(
         `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedID}/messages`,
         newMessage
