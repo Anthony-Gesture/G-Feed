@@ -1,0 +1,232 @@
+/* Global */
+:root {
+  --primary-color: #8585ff;
+  --secondary-color: #ffb538;
+  --comp-color: #ffc285;
+  --background-color: #f4f4f4;
+}
+
+@media (max-width: 600px) {
+  /* Contents on mobile */
+  section.report-screen {
+    height: 100%;
+  }
+
+  /* Go back button area on mobile */
+
+  .report-screen-go-back {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 2%;
+    position: relative;
+    border-bottom: 1px solid #dcdcdc;
+  }
+
+  p.post-fromto-info.my-1.reports-sender-info {
+    padding: 0;
+    /* margin-right: 98px; */
+    font-weight: 500;
+    font-size: 1.1rem;
+  }
+
+  .report-screen-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+
+  /* text input area on mobile */
+  .report-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2%;
+  }
+
+  .report-input-area {
+    width: 100%;
+    margin-top: 5%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .report-send-form {
+    background-color: #fff;
+    width: 100%;
+    padding-left: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .report-text-input-area {
+    resize: none;
+    outline: 0;
+    border: 0;
+    width: 300px;
+    height: 300px;
+    border: 1px solid #dcdcdc;
+  }
+
+  .report-text-input-area:focus {
+    outline: 0;
+    border: 1px solid #dcdcdc;
+  }
+
+  .report-buttons-area {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .report-buttons-area .btn.btn-primary {
+    margin: 20% auto;
+  }
+
+  .report-form .report-send-form input.report-form-input {
+    width: 75%;
+    height: 35px;
+    margin: 6px 1% 6px 1%;
+    border: 0;
+    padding: 2%;
+  }
+}
+/**/
+/**/
+/**/
+/**/
+/**/
+/**/
+/**/
+/**/
+/**/
+/**/
+/**/
+/**/
+/**/
+/**/
+/**/
+
+/* Media query for tablet and desktop view */
+@media (min-width: 601px) {
+  /* width */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  /* contents */
+  section.report-screen {
+    max-width: 500px;
+    height: 100%;
+    max-height: 780vh;
+    margin: 0 auto;
+    /* margin-top: 20%; */
+    box-shadow: rgb(30 61 99 / 50%) 0px 2px 10px 0px;
+  }
+
+  /* Go back button area */
+
+  .report-screen-go-back {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 2%;
+    position: relative;
+    border-bottom: 1px solid #dcdcdc;
+  }
+
+  .report-screen-go-back .go-back {
+    padding: 0;
+    position: absolute;
+    top: 28%;
+    left: 5%;
+  }
+
+  p.post-fromto-info.my-1.reports-sender-info {
+    padding: 0;
+    /* margin-right: 140px; */
+    font-weight: 500;
+  }
+
+  .report-screen-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+
+  /* text input area */
+  .report-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .report-send-form {
+    background-color: #fff;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .report-input-area {
+    width: 100%;
+    margin-top: 5%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .report-text-input-area {
+    resize: none;
+    outline: 0;
+    border: 0;
+    width: 400px;
+    height: 300px;
+    border: 1px solid #dcdcdc;
+  }
+
+  .report-text-input-area:focus {
+    outline: 0;
+    border: 1px solid #dcdcdc;
+  }
+
+  .report-buttons-area {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .report-buttons-area .btn.btn-primary {
+    margin: 20% auto;
+  }
+
+  .report-form .report-send-form input.report-form-input {
+    width: 75%;
+    height: 35px;
+    margin: 6px 1% 6px 1%;
+    border: 0;
+    padding: 2%;
+  }
+}

@@ -80,6 +80,24 @@
     padding: 0;
   }
 
+  .edit-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .edit-button:focus,
+  .edit-button:active {
+    border: 0;
+    outline: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
   /* Card-Header on mobile */
   .feed-post-header {
     display: flex;
@@ -215,6 +233,11 @@
     margin: 2% auto;
     width: 90%;
   }
+
+  .edit-button {
+    color: var(--comp-color);
+    font-size: 1.2rem;
+  }
 }
 
 /**/
@@ -246,6 +269,24 @@
 
   .feed-post-header .post-fromto-info {
     margin: 0 auto;
+  }
+
+  .edit-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .edit-button:focus,
+  .edit-button:active {
+    border: 0;
+    outline: 0;
+    background: transparent;
+    cursor: pointer;
   }
 
   /* Card */
@@ -446,7 +487,14 @@
 
   /* Split line */
   .split-line {
-    padding: 1%;
-    margin: 1% auto;
+    border-bottom: 1px dotted #a6a9b6;
+    padding: 2%;
+    margin: 2% auto;
+    width: 90%;
+  }
+
+  .edit-button {
+    color: var(--comp-color);
+    font-size: 1.2rem;
   }
 }
