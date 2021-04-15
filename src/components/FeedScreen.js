@@ -13,7 +13,8 @@ const FeedScreen = () => {
   const [loadingMoreFeeds, setLoadingMoreFeeds] = useState(false)
   const [modalShow, setModalShow] = useState(false)
 
-  const tokenId = '123'
+  const [tokenId, setTokenId] = useState('123') // '123' => Misbah | else => Anthony
+  const [isAutnehticated, setIsAuthenticated] = useState(true)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -47,11 +48,6 @@ const FeedScreen = () => {
     setFeeds([...feeds, ...olderFeeds])
 
     setLoadingMoreFeeds(false)
-  }
-
-  const onClickConsoleLog = e => {
-    e.preventDefault()
-    console.log('Clicked')
   }
 
   return (
@@ -181,7 +177,10 @@ const FeedScreen = () => {
             })}
 
           {!loadingFeeds && (
-            <button className='load-more-btn' onClick={getOlderFeeds}>
+            <button
+              className='load-more-btn load-more-feeds'
+              onClick={getOlderFeeds}
+            >
               {loadingMoreFeeds ? (
                 <div className='more-feeds-loading'>
                   <ClipLoader size={18} color='#fff' />

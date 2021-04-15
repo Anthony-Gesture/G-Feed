@@ -32,7 +32,7 @@ const Chatroom = ({ match }) => {
 
   let search = window.location.search
   let parameter = new URLSearchParams(search)
-  const tokenId = parameter.get('tokenId') // composerName = 'Misbah' if tokenId === '123' else 'Anthony'
+  const tokenId = parameter.get('tokenId') // composerName = 'Misbah' if tokenId === '123' else 'Anthony' go check FeedScreen.js line 16
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -185,49 +185,54 @@ const Chatroom = ({ match }) => {
           </div>
         )}
         <div id='comments' className='comments'>
-          <div className='comments-area'>
-            {messages.length === 0 && !messagesLoading ? (
-              <div style={{ textAlign: 'center' }}>
-                <p className='mt-3'>This feed has no messages yet.</p>
-              </div>
-            ) : (
-              messages
-                .sort((a, b) => {
-                  return a.sorter - b.sorter
-                })
-                .map(msg => (
-                  <div className='com-each-comment' key={msg.creationTime}>
-                    <div className='user-and-comment'>
-                      <p className='username-display'>
-                        <span>{msg.composerName}</span>
-                      </p>
-                      <p className='com-text-comment'>{msg.message}</p>
-                    </div>
+          <div className='comments-scrollable-area'>
+            <div className='comments-area'>
+              {messages.length === 0 && !messagesLoading ? (
+                <div style={{ textAlign: 'center' }}>
+                  <p className='mt-3'>This feed has no messages yet.</p>
+                </div>
+              ) : (
+                messages
+                  .sort((a, b) => {
+                    return a.sorter - b.sorter
+                  })
+                  .map(msg => (
+                    <div className='com-each-comment' key={msg.creationTime}>
+                      <div className='user-and-comment'>
+                        <p className='username-display'>
+                          <span>{msg.composerName}</span>
+                        </p>
+                        <p className='com-text-comment'>{msg.message}</p>
+                      </div>
 
-                    <div className='comment-footer'>
-                      <small className='comment-timestamp'>
-                        {timeSince(msg.creationTime)}
-                      </small>
+                      <div className='comment-footer'>
+                        <small className='comment-timestamp'>
+                          {timeSince(msg.creationTime)}
+                        </small>
+                      </div>
                     </div>
-                  </div>
-                ))
-            )}
-          </div>
-
-          <div className='comments-load-more'>
-            {hasMore &&
-              !messagesLoading &&
-              messages.length >= numOfMessagesPerLoad && (
-                <button className='load-more-button' onClick={getOlderMessages}>
-                  {loadingMore ? (
-                    <div className='more-messages-loading'>
-                      <ClipLoader size={18} color='#fff' />
-                    </div>
-                  ) : (
-                    'Load more'
-                  )}
-                </button>
+                  ))
               )}
+            </div>
+
+            <div className='comments-load-more'>
+              {hasMore &&
+                !messagesLoading &&
+                messages.length >= numOfMessagesPerLoad && (
+                  <button
+                    className='load-more-button'
+                    onClick={getOlderMessages}
+                  >
+                    {loadingMore ? (
+                      <div className='more-messages-loading'>
+                        <ClipLoader size={18} color='#fff' />
+                      </div>
+                    ) : (
+                      'Load more'
+                    )}
+                  </button>
+                )}
+            </div>
           </div>
         </div>
       </section>
