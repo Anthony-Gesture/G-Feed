@@ -1,0 +1,44 @@
+.edit-feed-modal-container.fade.modal.show {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.edit-feed-modal-container.modal .modal-content {
+  width: 80%;
+  max-width: 80%;
+  margin: 0 auto;
+}
+
+.edit-feed-modal-container.modal .modal-body {
+  padding: 0;
+}
+
+.edit-feed-modal-each-button {
+  background: transparent;
+  display: block;
+  width: 100%;
+  outline: 0;
+  border: 0;
+  border-bottom: 1px solid #bbb;
+  margin: 0 auto;
+  padding: 5% 2%;
+}
+
+.edit-feed-modal-each-button:last-child {
+  border: 0;
+}
+
+@media (max-width: 600px) {
+  .edit-feed-modal-container.fade.modal.show .modal-content {
+    width: 80%;
+    max-width: 350px;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 601px) {
+  .edit-feed-modal-container.fade.modal.show .modal-content {
+    max-width: 380px;
+    margin: 0 auto;
+  }
+}

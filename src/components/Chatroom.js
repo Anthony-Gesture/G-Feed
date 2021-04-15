@@ -33,6 +33,7 @@ const Chatroom = ({ match }) => {
   let search = window.location.search
   let parameter = new URLSearchParams(search)
   const tokenId = parameter.get('tokenId') // composerName = 'Misbah' if tokenId === '123' else 'Anthony' go check FeedScreen.js line 16
+  // const tokenId = localStorage.getItem('tokenId')
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -137,7 +138,7 @@ const Chatroom = ({ match }) => {
       <section className='main-comments'>
         <div className='main-comments-top'>
           <div className='main-comments-go-back'>
-            <Link to='/' className='go-back-btn'>
+            <Link to={`/?tokenId=${tokenId}`} className='go-back-btn'>
               <div className='go-back'>
                 <i className='fas fa-chevron-circle-left fa-2x'></i>
               </div>

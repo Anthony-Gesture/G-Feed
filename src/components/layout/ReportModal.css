@@ -1,0 +1,63 @@
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.report-post-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.report-post-input-text {
+  resize: none;
+}
+
+.report-post-input-text:active,
+.report-post-input-text:focus {
+  border: 1px solid #777;
+  outline: 0;
+}
+
+/* buttons */
+.report-post-each-button,
+.report-post-each-button:active,
+.report-post-each-button:focus {
+  border: 0;
+  outline: 0;
+  border-radius: 5px;
+  color: #fff;
+  padding: 2% 6%;
+}
+
+.report-post-buttons {
+  width: 40%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin-top: 2%;
+}
+
+/* mobile */
+@media (max-width: 600px) {
+}
+
+/* desktop */
+@media (min-width: 601px) {
+}

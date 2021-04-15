@@ -3,7 +3,7 @@ import axios from 'axios'
 import { Link } from 'react-router-dom'
 import { Card } from 'react-bootstrap'
 import ClipLoader from 'react-spinners/ClipLoader'
-import MyVerticallyCenteredModal from '../components/layout/Modal'
+import EditFeedModal from './layout/EditFeedModal'
 
 import './FeedScreen.css'
 
@@ -13,8 +13,13 @@ const FeedScreen = () => {
   const [loadingMoreFeeds, setLoadingMoreFeeds] = useState(false)
   const [modalShow, setModalShow] = useState(false)
 
-  const [tokenId, setTokenId] = useState('123') // '123' => Misbah | else => Anthony
-  const [isAutnehticated, setIsAuthenticated] = useState(true)
+  let search = window.location.search
+  let parameter = new URLSearchParams(search)
+  const tokenId = parameter.get('tokenId') // composerName = 'Misbah' if tokenId === '123' else 'Anthony' go check FeedScreen.js line 16
+
+  // const tokenId = localStorage.getItem('tokenId')
+
+  const uid = 'uid1234'
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -52,7 +57,9 @@ const FeedScreen = () => {
 
   return (
     <>
-      <MyVerticallyCenteredModal
+      <EditFeedModal
+        uid={uid}
+        tokenId={tokenId}
         show={modalShow}
         onHide={() => setModalShow(false)}
       />
