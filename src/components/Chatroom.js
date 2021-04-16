@@ -33,7 +33,6 @@ const Chatroom = ({ match }) => {
   let search = window.location.search
   let parameter = new URLSearchParams(search)
   const tokenId = parameter.get('tokenId') // composerName = 'Misbah' if tokenId === '123' else 'Anthony' go check FeedScreen.js line 16
-  // const tokenId = localStorage.getItem('tokenId')
 
   useEffect(() => {
     window.scrollTo(0, 0)

@@ -12,14 +12,14 @@ const FeedScreen = () => {
   const [loadingFeeds, setLoadingFeeds] = useState(false)
   const [loadingMoreFeeds, setLoadingMoreFeeds] = useState(false)
   const [modalShow, setModalShow] = useState(false)
+  const [feedID, setFeedID] = useState('') // to pass feed id to modal
+  const [feedOwnerID, setFeedOwnerID] = useState('')
+  const [name, setName] = useState('')
+  const [uid, setUid] = useState('')
 
   let search = window.location.search
   let parameter = new URLSearchParams(search)
   const tokenId = parameter.get('tokenId') // composerName = 'Misbah' if tokenId === '123' else 'Anthony' go check FeedScreen.js line 16
-
-  // const tokenId = localStorage.getItem('tokenId')
-
-  const uid = 'uid1234'
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -31,12 +31,23 @@ const FeedScreen = () => {
         'https://us-central1-gesture-dev.cloudfunctions.net/feed_api'
       )
       const currentFeeds = res.data.data
+
       setFeeds(currentFeeds)
 
       setLoadingFeeds(false)
     }
 
+    const getUserIdAndName = async () => {
+      const userRes = await axios.get(
+        `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/tokens/${tokenId}`
+      )
+
+      setName(userRes.data.data.name)
+      setUid(userRes.data.data.uid)
+    }
+
     fetchFeeds()
+    getUserIdAndName()
   }, [])
 
   const getOlderFeeds = async () => {
@@ -55,12 +66,22 @@ const FeedScreen = () => {
     setLoadingMoreFeeds(false)
   }
 
+  const handleModalGetFeedID = data => {
+    setFeedID(data.id)
+    setFeedOwnerID(data.owner_id)
+    setModalShow(true)
+  }
+
   return (
     <>
       <EditFeedModal
         uid={uid}
-        tokenId={tokenId}
+        // tokenId={tokenId}
         show={modalShow}
+        feedid={feedID}
+        feedownerid={feedOwnerID}
+        // setfeedownerid={setFeedOwnerID}
+        // setFeedID={setFeedID}
         onHide={() => setModalShow(false)}
       />
 
@@ -96,7 +117,7 @@ const FeedScreen = () => {
                     <span>
                       <button
                         className='edit-button'
-                        onClick={() => setModalShow(true)}
+                        onClick={() => handleModalGetFeedID(feed)}
                       >
                         <i className='fas fa-ellipsis-h'></i>
                       </button>
@@ -148,6 +169,7 @@ const FeedScreen = () => {
                                 ? feed.message.substring(0, 100) + '...'
                                 : feed.message}
                             </em>
+
                             <i className='fas fa-quote-right'></i>
                           </p>
                         </div>
@@ -167,7 +189,12 @@ const FeedScreen = () => {
 
                   <Card.Footer className='feed-post-footer'>
                     <div className='post-timestamp'>
-                      <small>Posted on {feed.createdAt}</small>
+                      <small>Posted on {feed.createdAt}</small>{' '}
+                      {`uid123` === feed.owner_id ? (
+                        <p>This is your post.</p>
+                      ) : (
+                        <p>This is your friend's post.</p>
+                      )}
                     </div>
 
                     <div className='post-chatroom-btn'>

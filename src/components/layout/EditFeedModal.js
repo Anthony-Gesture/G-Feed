@@ -1,14 +1,16 @@
 import { useState } from 'react'
-import { Modal, Button } from 'react-bootstrap'
+import { Modal } from 'react-bootstrap'
 import ReportModal from './ReportModal'
 
 import './EditFeedModal.css'
 
 const EditFeedModal = props => {
   const [reportModalShow, setReportModalShow] = useState(false)
+  const [feedID, setFeedID] = useState(props.feedid)
 
   const openReportFeedModal = () => {
     props.onHide()
+    setFeedID(props.feedid)
     setReportModalShow(true)
   }
 
@@ -16,6 +18,8 @@ const EditFeedModal = props => {
     <>
       <ReportModal
         show={reportModalShow}
+        feedid={feedID}
+        // setFeedID={setFeedID}
         onHide={() => setReportModalShow(false)}
       />
 
@@ -29,25 +33,21 @@ const EditFeedModal = props => {
       >
         <div className='edit-feed-modal-buttons-container'>
           <Modal.Body>
-            {props.uid === 'uid123' && (
-              <button className='edit-feed-modal-each-button' block>
+            {props.uid === props.feedownerid ? (
+              <button className='edit-feed-modal-each-button block'>
                 Make Public/Private
               </button>
-            )}
-
-            {props.uid !== 'uid123' && (
+            ) : (
               <button
-                className='edit-feed-modal-each-button'
-                block
+                className='edit-feed-modal-each-button block'
                 onClick={() => openReportFeedModal()}
               >
-                Report Post
+                Report Post: {props.feedid}
               </button>
             )}
 
             <button
-              className='edit-feed-modal-each-button'
-              block
+              className='edit-feed-modal-each-button block'
               onClick={props.onHide}
             >
               Cancel

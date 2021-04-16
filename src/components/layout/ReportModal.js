@@ -1,7 +1,11 @@
-import { Modal, Button } from 'react-bootstrap'
+import { Modal } from 'react-bootstrap'
 import './ReportModal.css'
 
 const ReportModal = props => {
+  const handleReportSubmit = e => {
+    e.preventDefault()
+    console.log('Submitted')
+  }
   return (
     <Modal
       {...props}
@@ -12,12 +16,12 @@ const ReportModal = props => {
     >
       <Modal.Header>
         <Modal.Title id='contained-modal-title-vcenter'>
-          <p className='modal-title'>Report Post</p>
+          <p className='modal-title'>Report Post: {props.feedid}</p>
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <form onSubmit={() => console.log('Submitted')}>
+        <form onSubmit={handleReportSubmit}>
           <div className='report-post-container'>
             <div className='report-post-text-area'>
               <textarea

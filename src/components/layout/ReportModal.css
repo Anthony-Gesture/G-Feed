@@ -18,6 +18,12 @@
   background: #555;
 }
 
+.modal-dialog .modal-content .modal-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .report-post-container {
   display: flex;
   flex-direction: column;
