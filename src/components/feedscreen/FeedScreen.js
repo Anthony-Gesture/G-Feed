@@ -21,7 +21,7 @@ const FeedScreen = () => {
 
   let search = window.location.search
   let parameter = new URLSearchParams(search)
-  const tokenId = parameter.get('tokenId') // composerName = 'Misbah' if tokenId === '123' else 'Anthony' go check FeedScreen.js line 16
+  const tokenId = parameter.get('tokenId') || '' // composerName = 'Misbah' if tokenId === '123' else 'Anthony' go check FeedScreen.js line 16
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -43,6 +43,8 @@ const FeedScreen = () => {
       const userRes = await axios.get(
         `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/tokens/${tokenId}`
       )
+
+      if (!userRes) return
 
       setName(userRes.data.data.name)
       setUid(userRes.data.data.uid)

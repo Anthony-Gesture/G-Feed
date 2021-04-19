@@ -13,7 +13,7 @@ const App = () => {
       <Router>
         <Navbar />
         <Switch>
-          <Route exact path='/' component={FeedScreen} />
+          <Route exact path='/:tokenId?' component={FeedScreen} />
           <Route exact path='/:id/messages' component={Chatroom} />
         </Switch>
       </Router>

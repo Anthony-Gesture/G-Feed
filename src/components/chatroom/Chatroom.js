@@ -32,7 +32,7 @@ const Chatroom = ({ match }) => {
 
   let search = window.location.search
   let parameter = new URLSearchParams(search)
-  const tokenId = parameter.get('tokenId') // composerName = 'Misbah' if tokenId === '123' else 'Anthony' go check FeedScreen.js line 16
+  const tokenId = parameter.get('tokenId') || '' // composerName = 'Misbah' if tokenId === '123' else 'Anthony' go check FeedScreen.js line 16
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -100,8 +100,10 @@ const Chatroom = ({ match }) => {
       `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/tokens/${tokenId}`
     )
 
+    if (!userRes) return
+
     setName(userRes.data.data.name)
-    // setUid(userRes.data.data.uid)
+    setUid(userRes.data.data.uid)
   }
 
   // to make spinner on Post button look better
@@ -122,7 +124,10 @@ const Chatroom = ({ match }) => {
           </div>
         )}
         <div id='comments' className='comments'>
-          <div className='comments-scrollable-area'>
+          <div
+            id='comments-scrollable-area'
+            className='comments-scrollable-area'
+          >
             <div className='comments-area'>
               {messages.length === 0 && !messagesLoading ? (
                 <div style={{ textAlign: 'center' }}>

@@ -16,22 +16,34 @@ const ChatroomTextInput = ({ tokenid, feedid, name }) => {
     setPosting(true)
 
     try {
-      const newMessage = {
-        message,
-        creationTime: Date.now(),
-        sorter: Date.now() * -1,
-        composerName: name,
+      if (
+        !tokenid ||
+        tokenid === '' ||
+        tokenid === null ||
+        tokenid === undefined ||
+        tokenid.length === 0
+      ) {
+        window.alert('Invalid token')
+        setPosting(false)
+        return
+      } else {
+        const newMessage = {
+          message,
+          creationTime: Date.now(),
+          sorter: Date.now() * -1,
+          composerName: name,
+        }
+        const res = await axios.post(
+          `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedid}/messages`,
+          newMessage
+        )
+
+        setMessages([res.data.data.message, ...messages])
+        setMessage('')
+
+        document.getElementById('comments-scrollable-area').scrollTo(0, 0) // scroll to top after a new message is posted
+        setPosting(false)
       }
-      const res = await axios.post(
-        `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedid}/messages`,
-        newMessage
-      )
-
-      setMessages([res.data.data.message, ...messages])
-      setMessage('')
-
-      document.getElementById('comments').scrollTo(0, 0) // scroll to top after a new message is posted
-      setPosting(false)
     } catch (error) {
       console.error(error.message)
     }
