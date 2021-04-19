@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Link } from 'react-router-dom'
-import { Button, Form } from 'react-bootstrap'
-import { timeSince } from '../utils/utils.js'
-import { db } from '../utils/firebase'
+import { db } from '../../utils/firebase'
 import ClipLoader from 'react-spinners/ClipLoader'
+import ChatroomTextInput from './ChatroomTextInput'
+import ChatroomMessages from './ChatroomMessages'
 
 import './Chatroom.css'
 
@@ -23,12 +22,13 @@ const Chatroom = ({ match }) => {
   const numOfMessagesPerLoad = 8
 
   const [hasMore, setHasMore] = useState(true) // for the Load more button display
-  const [messages, setMessages] = useState([]) // all the messages for each feed
-  const [message, setMessage] = useState('') // message - text input
 
+  const [messages, setMessages] = useState([]) // all the messages for each feed
   const [messagesLoading, setMessagesLoading] = useState(false) // for the spinner when the first 8 messages are being loaded
   const [loadingMore, setLoadingMore] = useState(false) // for the spinner when users click Load more button
-  const [posting, setPosting] = useState(false) // for the spinner when users click Post button
+
+  const [name, setName] = useState('')
+  const [uid, setUid] = useState('')
 
   let search = window.location.search
   let parameter = new URLSearchParams(search)
@@ -36,6 +36,8 @@ const Chatroom = ({ match }) => {
 
   useEffect(() => {
     window.scrollTo(0, 0)
+
+    handleSetUserName()
 
     let messagesRef = db
       .ref(`/social_feed_messages/${feedID}`)
@@ -93,36 +95,13 @@ const Chatroom = ({ match }) => {
     setLoadingMore(false)
   }
 
-  const postMessageHandler = async e => {
-    e.preventDefault()
-    setPosting(true)
-
+  const handleSetUserName = async () => {
     const userRes = await axios.get(
       `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/tokens/${tokenId}`
     )
 
-    let userName = userRes.data.data.name
-
-    try {
-      const newMessage = {
-        message,
-        creationTime: Date.now(),
-        sorter: Date.now() * -1,
-        composerName: userName,
-      }
-      const res = await axios.post(
-        `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${feedID}/messages`,
-        newMessage
-      )
-
-      setMessages([res.data.data.message, ...messages])
-      setMessage('')
-
-      document.getElementById('comments').scrollTo(0, 0) // scroll to top after a new message is posted
-      setPosting(false)
-    } catch (error) {
-      console.error(error.message)
-    }
+    setName(userRes.data.data.name)
+    // setUid(userRes.data.data.uid)
   }
 
   // to make spinner on Post button look better
@@ -135,49 +114,7 @@ const Chatroom = ({ match }) => {
   return (
     <>
       <section className='main-comments'>
-        <div className='main-comments-top'>
-          <div className='main-comments-go-back'>
-            <Link to={`/?tokenId=${tokenId}`} className='go-back-btn'>
-              <div className='go-back'>
-                <i className='fas fa-chevron-circle-left fa-2x'></i>
-              </div>
-            </Link>
-
-            <div className='main-comments-sender-info'>
-              <p className='post-fromto-info my-1 comments-sender-info'>
-                Comments
-              </p>
-            </div>
-          </div>
-
-          <div className='comment-form'>
-            <Form className='comment-send-form' onSubmit={postMessageHandler}>
-              <input
-                type='text'
-                name='text'
-                value={message}
-                style={{ fontSize: '16px' }}
-                placeholder='Say something...'
-                className='comment-form-input'
-                onChange={e => setMessage(e.target.value)}
-              />
-
-              <Button
-                className='msg-send-button'
-                type='submit'
-                disabled={message.length === 0 || posting}
-              >
-                {posting ? (
-                  <span>
-                    <ClipLoader size={20} color='#8585ff' />
-                  </span>
-                ) : (
-                  <span>Post</span>
-                )}
-              </Button>
-            </Form>
-          </div>
-        </div>
+        <ChatroomTextInput tokenid={tokenId} feedid={feedID} name={name} />
 
         {messagesLoading && (
           <div className='messages-loading'>
@@ -197,20 +134,7 @@ const Chatroom = ({ match }) => {
                     return a.sorter - b.sorter
                   })
                   .map(msg => (
-                    <div className='com-each-comment' key={msg.creationTime}>
-                      <div className='user-and-comment'>
-                        <p className='username-display'>
-                          <span>{msg.composerName}</span>
-                        </p>
-                        <p className='com-text-comment'>{msg.message}</p>
-                      </div>
-
-                      <div className='comment-footer'>
-                        <small className='comment-timestamp'>
-                          {timeSince(msg.creationTime)}
-                        </small>
-                      </div>
-                    </div>
+                    <ChatroomMessages key={msg.creationTime} msg={msg} />
                   ))
               )}
             </div>

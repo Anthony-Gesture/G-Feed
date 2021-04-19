@@ -19,7 +19,6 @@ const EditFeedModal = props => {
       <ReportModal
         show={reportModalShow}
         feedid={feedID}
-        // setFeedID={setFeedID}
         onHide={() => setReportModalShow(false)}
       />
 
@@ -35,7 +34,7 @@ const EditFeedModal = props => {
           <Modal.Body>
             {props.uid === props.feedownerid ? (
               <button className='edit-feed-modal-each-button block'>
-                Make Public/Private
+                {props.isprivate ? 'Make public' : 'Make private'}
               </button>
             ) : (
               <button

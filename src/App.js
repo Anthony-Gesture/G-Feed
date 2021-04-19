@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import FeedScreen from './components/FeedScreen'
-import Chatroom from './components/Chatroom'
+import FeedScreen from './components/feedscreen/FeedScreen'
+import Chatroom from './components/chatroom/Chatroom'
 import Navbar from './components/Navbar'
 
 import './bootstrap.min.css'
