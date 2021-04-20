@@ -66,7 +66,7 @@
   .feeds-loading {
     display: flex;
     justify-content: center;
-    margin-top: 45vh;
+    margin-top: 50vh;
   }
 
   .more-feeds-loading {
@@ -298,7 +298,7 @@
   .feeds-loading {
     display: flex;
     justify-content: center;
-    margin-top: 50vh;
+    margin-top: 35vh;
   }
 
   .more-feeds-loading {

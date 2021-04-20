@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import axios from 'axios'
 import { Modal } from 'react-bootstrap'
 import ReportModal from './ReportModal'
 
@@ -14,11 +15,26 @@ const EditFeedModal = props => {
     setReportModalShow(true)
   }
 
+  const handleFeedPrivacy = async () => {
+    console.log(`Feed ID: ${props.feedid}`)
+    console.log(`Token ID: ${props.tokenid}`)
+
+    const res = await axios.post(
+      `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${props.feedid}/privacy?tokenId=${props.tokenid}`,
+      { privacy: true }
+    )
+
+    console.log(res)
+
+    props.onHide()
+  }
+
   return (
     <>
       <ReportModal
         show={reportModalShow}
         feedid={feedID}
+        tokenid={props.tokenid}
         onHide={() => setReportModalShow(false)}
       />
 
@@ -33,8 +49,11 @@ const EditFeedModal = props => {
         <div className='edit-feed-modal-buttons-container'>
           <Modal.Body>
             {props.uid === props.feedownerid ? (
-              <button className='edit-feed-modal-each-button block'>
-                {props.isprivate ? 'Make public' : 'Make private'}
+              <button
+                className='edit-feed-modal-each-button block'
+                onClick={handleFeedPrivacy}
+              >
+                {props.ispublic ? 'Make Private' : 'Make Public'}
               </button>
             ) : (
               <button

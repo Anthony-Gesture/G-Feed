@@ -3,21 +3,19 @@ import { Link } from 'react-router-dom'
 import { Card } from 'react-bootstrap'
 import EditFeedModal from '../layout/modals/EditFeedModal'
 
-const Feed = ({ feed }) => {
+const Feed = ({ feed, tokenid, userid }) => {
   const [feedID, setFeedID] = useState(feed.id) // to pass feed id to modal
   const [feedOwnerID, setFeedOwnerID] = useState(feed.ownder_id)
-  const [isPrivate, setIsPrivate] = useState(feed.privacy)
   const [modalShow, setModalShow] = useState(false)
   const [uid, setUid] = useState('')
 
-  let search = window.location.search
-  let parameter = new URLSearchParams(search)
-  const tokenId = parameter.get('tokenId') // composerName = 'Misbah' if tokenId === '123' else 'Anthony' go check FeedScreen.js line 16
+  // let search = window.location.search
+  // let parameter = new URLSearchParams(search)
+  // const tokenId = parameter.get('tokenId') // composerName = 'Misbah' if tokenId === '123' else 'Anthony' go check FeedScreen.js line 16
 
   const handleModalGetFeedID = data => {
     setFeedID(data.id)
     setFeedOwnerID(data.owner_id)
-    setIsPrivate(data.privacy)
     setModalShow(true)
   }
 
@@ -25,11 +23,12 @@ const Feed = ({ feed }) => {
     <>
       {' '}
       <EditFeedModal
-        uid={uid}
+        uid={userid}
         show={modalShow}
+        tokenid={tokenid}
+        ispublic={feed.sorter}
         feedid={feedID}
         feedownerid={feedOwnerID}
-        // isprivate={isPrivate}
         onHide={() => setModalShow(false)}
       />
       <Card key={feed.id}>
@@ -114,8 +113,8 @@ const Feed = ({ feed }) => {
 
         <Card.Footer className='feed-post-footer'>
           <div className='post-timestamp'>
-            <small>Posted on {feed.createdAt}</small>{' '}
-            {`uid123` === feed.owner_id ? (
+            <small>Posted on {feed.creationTime}</small>{' '}
+            {userid === feed.owner_id ? (
               <p>This is your post.</p>
             ) : (
               <p>This is your friend's post.</p>
@@ -124,7 +123,7 @@ const Feed = ({ feed }) => {
 
           <div className='post-chatroom-btn'>
             <Link
-              to={`/${feed.id}/messages?tokenId=${tokenId}`}
+              to={`/${feed.id}/messages?tokenId=${tokenid}`}
               className='post-chatroom-button'
             >
               <i className='fas fa-comments'></i>

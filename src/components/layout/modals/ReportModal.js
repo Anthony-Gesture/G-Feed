@@ -1,11 +1,28 @@
+import axios from 'axios'
+import { useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import './ReportModal.css'
 
 const ReportModal = props => {
-  const handleReportSubmit = e => {
+  const [text, setText] = useState('')
+
+  const handleReportSubmit = async e => {
     e.preventDefault()
-    console.log('Submitted')
+
+    // console.log(`Feed ID: ${props.feedid}`)
+    // console.log(`Token ID: ${props.tokenid}`)
+    // console.log(`Text: ${text}`)
+
+    const res = await axios.post(
+      `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/${props.feedid}/report?tokenId=${props.tokenid}`,
+      { text, uid: props.tokenid }
+    )
+
+    // console.log(res)
+
+    props.onHide()
   }
+
   return (
     <Modal
       {...props}
@@ -28,6 +45,8 @@ const ReportModal = props => {
                 cols='30'
                 rows='10'
                 className='report-post-input-text'
+                value={text}
+                onChange={e => setText(e.target.value)}
               ></textarea>
             </div>
 

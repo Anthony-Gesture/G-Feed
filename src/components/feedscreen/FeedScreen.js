@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import ClipLoader from 'react-spinners/ClipLoader'
-import EditFeedModal from '../layout/modals/EditFeedModal'
 import Feed from './Feed'
 
 import './FeedScreen.css'
@@ -11,17 +10,19 @@ const FeedScreen = () => {
   const [loadingFeeds, setLoadingFeeds] = useState(false)
   const [loadingMoreFeeds, setLoadingMoreFeeds] = useState(false)
 
-  const [feedID, setFeedID] = useState('') // to pass feed id to modal
-  const [feedOwnerID, setFeedOwnerID] = useState('')
-  const [isPrivate, setIsPrivate] = useState(null)
-  const [modalShow, setModalShow] = useState(false)
+  // const [feedID, setFeedID] = useState('') // to pass feed id to modal
+  // const [feedOwnerID, setFeedOwnerID] = useState('')
+  // const [isPrivate, setIsPrivate] = useState(null)
+  // const [modalShow, setModalShow] = useState(false)
 
   const [name, setName] = useState('')
   const [uid, setUid] = useState('')
 
+  const [numberOfReports, setNumberOfReports] = useState(0)
+
   let search = window.location.search
   let parameter = new URLSearchParams(search)
-  const tokenId = parameter.get('tokenId') || '' // composerName = 'Misbah' if tokenId === '123' else 'Anthony' go check FeedScreen.js line 16
+  const tokenId = parameter.get('tokenId') || '124' // composerName = 'Misbah' if tokenId === '123' else 'Anthony'
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -30,7 +31,7 @@ const FeedScreen = () => {
       setLoadingFeeds(true)
 
       const res = await axios.get(
-        'https://us-central1-gesture-dev.cloudfunctions.net/feed_api'
+        `https://us-central1-gesture-dev.cloudfunctions.net/feed_api?tokenId=${tokenId}`
       )
       const currentFeeds = res.data.data
 
@@ -88,12 +89,12 @@ const FeedScreen = () => {
           )}
           {feeds
             .sort((a, b) => {
-              // sorts the array by createdAt
+              // sorts the array by creationTime
               // the latest feed displays on top
-              return b.createdAt - a.createdAt
+              return b.creationTime - a.creationTime
             })
             .map(feed => (
-              <Feed key={feed.id} feed={feed} />
+              <Feed key={feed.id} feed={feed} tokenid={tokenId} userid={uid} />
             ))}
 
           {!loadingFeeds && (
