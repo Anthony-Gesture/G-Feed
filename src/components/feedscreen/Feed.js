@@ -7,7 +7,6 @@ const Feed = ({ feed, tokenid, userid }) => {
   const [feedID, setFeedID] = useState(feed.id) // to pass feed id to modal
   const [feedOwnerID, setFeedOwnerID] = useState(feed.ownder_id)
   const [modalShow, setModalShow] = useState(false)
-  const [uid, setUid] = useState('')
 
   // let search = window.location.search
   // let parameter = new URLSearchParams(search)

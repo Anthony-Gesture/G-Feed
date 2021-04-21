@@ -18,9 +18,8 @@ const ReportModal = props => {
       { text, uid: props.tokenid }
     )
 
-    // console.log(res)
-
     props.onHide()
+    window.location.reload()
   }
 
   return (
@@ -46,6 +45,7 @@ const ReportModal = props => {
                 rows='10'
                 className='report-post-input-text'
                 value={text}
+                placeholder='What seems to be the issue?'
                 onChange={e => setText(e.target.value)}
               ></textarea>
             </div>
@@ -63,7 +63,7 @@ const ReportModal = props => {
                 className='report-post-each-button report-post-submit'
                 style={{ backgroundColor: '#8585ff' }}
               >
-                Submit
+                Report
               </button>
             </div>
           </div>

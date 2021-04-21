@@ -18,8 +18,6 @@ const FeedScreen = () => {
   const [name, setName] = useState('')
   const [uid, setUid] = useState('')
 
-  const [numberOfReports, setNumberOfReports] = useState(0)
-
   let search = window.location.search
   let parameter = new URLSearchParams(search)
   const tokenId = parameter.get('tokenId') || '124' // composerName = 'Misbah' if tokenId === '123' else 'Anthony'
@@ -27,33 +25,33 @@ const FeedScreen = () => {
   useEffect(() => {
     window.scrollTo(0, 0)
 
-    const fetchFeeds = async () => {
-      setLoadingFeeds(true)
-
-      const res = await axios.get(
-        `https://us-central1-gesture-dev.cloudfunctions.net/feed_api?tokenId=${tokenId}`
-      )
-      const currentFeeds = res.data.data
-
-      setFeeds(currentFeeds)
-
-      setLoadingFeeds(false)
-    }
-
-    const getUserIdAndName = async () => {
-      const userRes = await axios.get(
-        `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/tokens/${tokenId}`
-      )
-
-      if (!userRes) return
-
-      setName(userRes.data.data.name)
-      setUid(userRes.data.data.uid)
-    }
-
     fetchFeeds()
     getUserIdAndName()
   }, [])
+
+  const fetchFeeds = async () => {
+    setLoadingFeeds(true)
+
+    const res = await axios.get(
+      `https://us-central1-gesture-dev.cloudfunctions.net/feed_api?tokenId=${tokenId}`
+    )
+    const currentFeeds = res.data.data
+
+    setFeeds(currentFeeds)
+
+    setLoadingFeeds(false)
+  }
+
+  const getUserIdAndName = async () => {
+    const userRes = await axios.get(
+      `https://us-central1-gesture-dev.cloudfunctions.net/feed_api/tokens/${tokenId}`
+    )
+
+    if (!userRes) return
+
+    setName(userRes.data.data.name)
+    setUid(userRes.data.data.uid)
+  }
 
   const getOlderFeeds = async () => {
     setLoadingMoreFeeds(true)

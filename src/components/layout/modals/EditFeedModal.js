@@ -27,6 +27,7 @@ const EditFeedModal = props => {
     console.log(res)
 
     props.onHide()
+    window.location.reload()
   }
 
   return (
